@@ -2,10 +2,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    
-      console.log(process.env.NEXT_PUBLIC_NEWS_API_KEY);
-
-
+    <div>page</div>
   )
 }
 
