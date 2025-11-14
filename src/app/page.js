@@ -1,12 +1,10 @@
-import React from 'react'
+import Navbar from "./components/Navbar";
 
-const page = () => {
+export default function Home() {
   return (
-    
-      console.log(process.env.NEXT_PUBLIC_NEWS_API_KEY);
-
-
-  )
+    <div>
+      <Navbar />
+       
+    </div>
+  );
 }
-
-export default page
