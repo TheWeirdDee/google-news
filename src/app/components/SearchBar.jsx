@@ -3,30 +3,27 @@
 import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import axios from "axios";
-import { endpoints } from "../api/news";  
+import { endpoints } from "./api/news";
 
 export default function SearchBar({ className = "", onResultClick }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchResults = async (q) => {
-    if (!q) return setResults([]);
-
-    setLoading(true);
-    try {
-      const res = await axios.get(endpoints.search(q));
-      setResults(res.data.articles || []);
-    } catch (err) {
-      console.error("Search error:", err);
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    const debounce = setTimeout(() => fetchResults(query), 500);
+    if (!query) return setResults([]);
+    const debounce = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get(endpoints.search(query));
+        setResults(res.data.articles || []);
+      } catch {
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 500);
+
     return () => clearTimeout(debounce);
   }, [query]);
 
@@ -46,19 +43,22 @@ export default function SearchBar({ className = "", onResultClick }) {
       {query && (
         <div className="absolute top-full left-0 w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 mt-1 max-h-60 overflow-y-auto z-50 rounded-md shadow-md">
           {loading && <p className="p-4 text-gray-700 dark:text-gray-300">Loading...</p>}
-          {!loading && results.length === 0 && <p className="p-4 text-gray-700 dark:text-gray-300">No results found.</p>}
-          {!loading && results.map((item, idx) => (
-            <a
-              key={idx}
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => onResultClick && onResultClick()}
-              className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-900 dark:text-gray-200"
-            >
-              {item.title}
-            </a>
-          ))}
+          {!loading && results.length === 0 && (
+            <p className="p-4 text-gray-700 dark:text-gray-300">No results found.</p>
+          )}
+          {!loading &&
+            results.map((item, idx) => (
+              <a
+                key={idx}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => onResultClick && onResultClick()}
+                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-900 dark:text-gray-200"
+              >
+                {item.title}
+              </a>
+            ))}
         </div>
       )}
     </div>
